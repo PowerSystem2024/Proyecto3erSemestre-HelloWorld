@@ -1,5 +1,7 @@
+from base_de_datos import BaseDeDatos
+
 def iniciar_sesion():
-    # TODO: crear la función para la creación de la base de datos
+    
     db = BaseDeDatos()                # Crear instancia de la base de datos
     db.conectar()                     # Conectar a la base de datos
     db.crear_tabla_usuarios()         # Crear la tabla de usuarios si no existe
