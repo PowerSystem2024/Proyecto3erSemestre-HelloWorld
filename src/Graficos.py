@@ -65,7 +65,6 @@ class Graficos:
         return self._crear_celda(self.PUNTO, self.BARRA_VERTICAL, self.IGUAL, self._ancho_celda, self._alto_celda)
     
 
-
     def crear_celda_rectangular_vacia(self):
         """
         Crea una celda rectangular vacía.
@@ -82,3 +81,27 @@ class Graficos:
         return self._crear_celda(self.ESPACIO, self.ESPACIO, self.ESPACIO, self._ancho_celda, self._alto_celda)
     
     
+    def crear_celda_numerica(self):
+
+        """
+        Crea una celda con formato numérico utilizando los atributos
+        de ancho y alto definidos en la instancia.
+
+        Retorna:
+            - lista de strings: cada string representa una línea de la celda.
+        """
+
+        return self._crear_celda(self.PUNTO, self.BARRA_VERTICAL, self.IGUAL, self._ancho_celda, self._alto_celda)
+    
+
+    def crear_celda_numerica_vacia(self):
+
+        """
+        Crea una celda con formato numérico vacío utilizando los atributos
+        de ancho y alto definidos en la instancia.
+
+        Retorna:
+            - lista de strings: cada string representa una línea de la celda.
+        """
+
+        return self._crear_celda(self.ESPACIO, self.ESPACIO, self.ESPACIO, self._ancho_celda, self._alto_celda)
