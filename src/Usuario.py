@@ -37,3 +37,20 @@ class Usuario:
             imprimir_con_delay('Ingrese un número válido')
         
         return self.saldo
+    
+    def transferir_saldo(self):
+        try:
+            cantidad = int(input("Ingrese la cantidad a transferir: "))
+            if cantidad > self.saldo:
+                imprimir_con_delay('Saldo no disponible')
+            else:
+                imprimir_con_delay('Saldo transferido con éxito')
+                self.saldo -= cantidad
+                self.db.actualizar_saldo(self.id_usuario, self.saldo)
+        except ValueError:
+            imprimir_con_delay('Ingrese un número válido')
+        
+        return self.saldo
+    
+    def get_nombre(self):
+        return self.nombre
