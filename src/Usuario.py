@@ -22,3 +22,18 @@ class Usuario:
         except ValueError:
             imprimir_con_delay('Ingrese un número válido')
         return
+    
+    def depositar_saldo(self):
+        try:
+            cantidad = int(input("Ingrese la cantidad a depositar: "))
+            if cantidad <= 0:
+                imprimir_con_delay('Por favor ingrese una cantidad válida mayor a cero')
+            else:
+                self.saldo += cantidad
+                self.db.actualizar_saldo(self.id_usuario, self.saldo)
+                imprimir_con_delay(f'Se depositaron {cantidad} exitosamente')
+                imprimir_con_delay(f'Nuevo saldo: {self.saldo}')
+        except ValueError:
+            imprimir_con_delay('Ingrese un número válido')
+        
+        return self.saldo
