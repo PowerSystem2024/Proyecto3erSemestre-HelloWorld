@@ -11,7 +11,7 @@ class IniciarSesion(CrearSubMenu):
 
     def ejecutar(self, menu):
         borrar_pantalla()
-        if self._cajero.autenticar_usuario():  # Si se logra autentificar el usuario, se entra al menu principal
+        if self._cajero.iniciar_sesion():  # Si se logra autentificar el usuario, se entra al menu principal
             if (self._cajero.get_usuario_actual().get_nombre() == 'admin'):
                 self._menu_secreto.crear_menu()
                 borrar_pantalla()
