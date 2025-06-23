@@ -1,6 +1,6 @@
-from .Graficos import Graficos
-from .Accion import Accion
-from .utilidades import escribir_con_retraso, borrar_pantalla
+from .InterfazTerminal.Graficos import Graficos
+from .InterfazTerminal.Accion import Accion
+from .Utilidades import escribir_con_retraso, borrar_pantalla
 
 class Menu:
 

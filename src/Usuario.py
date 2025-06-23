@@ -1,4 +1,4 @@
-from .utilidades import validar_valor_positivo, validar_valor_no_negativo, validar_usuario
+from .Utilidades import validar_valor_positivo, validar_valor_no_negativo, validar_usuario
 from .RespuestaSemantica import RespuestaSemantica
 
 class Usuario:
@@ -11,7 +11,6 @@ class Usuario:
     def consultar_saldo(self):
         respuesta = RespuestaSemantica(
             tipo_respuesta="consultar_saldo", 
-            nombre="Consultar Saldo"
         )
 
         valido, error = validar_valor_no_negativo(self.saldo)
@@ -25,78 +24,75 @@ class Usuario:
 
         
     
-    def retirar_dinero(self, cantidad) -> dict:
+    def retirar_dinero(self, cantidad_dinero) -> dict:
         respuesta = RespuestaSemantica(
             tipo_respuesta="retirar_dinero",
-            nombre="Retirar Dinero"
         )
 
-        valido, resultado = validar_valor_positivo(cantidad)
+        valido, resultado = validar_valor_positivo(cantidad_dinero)
         if not valido:
             return respuesta.con_error(resultado).obtener_diccionario()
-        cantidad = resultado
+        cantidad_dinero = resultado
 
         valido, error = validar_valor_no_negativo(self.saldo)
         if not valido:
             return respuesta.con_error(error).obtener_diccionario()
 
-        if cantidad > self.saldo:
+        if cantidad_dinero > self.saldo:
             return respuesta.con_error("saldo_insuficiente").obtener_diccionario()
 
-        self.saldo -= cantidad
+        self.saldo -= cantidad_dinero
         self.db.actualizar_saldo(self.id_usuario, self.saldo)
 
         return respuesta.con_exito({
             "id_usuario": self.id_usuario,
             "saldo_actual": self.saldo,
-            "monto_retirado": cantidad
+            "monto_retirado": cantidad_dinero
         }).obtener_diccionario()
 
 
     
-    def depositar_dinero(self, cantidad) -> dict:
+    def depositar_dinero(self, cantidad_dinero) -> dict:
         respuesta = RespuestaSemantica(
             tipo_respuesta="depositar_dinero",
-            nombre="Depositar Dinero"
         )
 
-        valido, resultado = validar_valor_positivo(cantidad)
+        valido, resultado = validar_valor_positivo(cantidad_dinero)
         if not valido:
             return respuesta.con_error(resultado).obtener_diccionario()
-        cantidad = resultado
+        cantidad_dinero = resultado
 
         valido, error = validar_valor_no_negativo(self.saldo)
         if not valido:
             return respuesta.con_error(error).obtener_diccionario()
 
-        self.saldo += cantidad
+        self.saldo += cantidad_dinero
         self.db.actualizar_saldo(self.id_usuario, self.saldo)
 
         return respuesta.con_exito({
             "id_usuario": self.id_usuario,
-            "monto_depositado": cantidad,
+            "monto_depositado": cantidad_dinero,
             "saldo_actual": self.saldo
         }).obtener_diccionario()
 
     
-    def transferir_dinero(self, cantidad, usuario_destino) -> dict:
+    def transferir_dinero(self, cantidad_dinero, usuario_destino) -> dict:
         respuesta = RespuestaSemantica(
             tipo_respuesta="transferir_dinero",
-            nombre="Transferir Dinero"
         )
 
-        # Validar cantidad
-        valido, resultado = validar_valor_positivo(cantidad)
+        # Validar cantidad_dinero
+        valido, resultado = validar_valor_positivo(cantidad_dinero)
         if not valido:
             return respuesta.con_error(resultado).obtener_diccionario()
-        cantidad = resultado
+        cantidad_dinero = resultado
 
         # Validar saldo del usuario origen
         valido, error = validar_valor_no_negativo(self.saldo)
         if not valido:
             return respuesta.con_error(error).obtener_diccionario()
 
-        if cantidad > self.saldo:
+        if cantidad_dinero > self.saldo:
             return respuesta.con_error("saldo_insuficiente").obtener_diccionario()
 
         # Validar destinatario
@@ -110,8 +106,8 @@ class Usuario:
             return respuesta.con_error("transferencia_a_mismo_usuario").obtener_diccionario()
 
         # Realizar transferencia
-        self.saldo -= cantidad
-        usuario_destino.saldo += cantidad
+        self.saldo -= cantidad_dinero
+        usuario_destino.saldo += cantidad_dinero
 
         self.db.actualizar_saldo(self.id_usuario, self.saldo)
         usuario_destino.db.actualizar_saldo(usuario_destino.id_usuario, usuario_destino.saldo)
@@ -119,7 +115,7 @@ class Usuario:
         return respuesta.con_exito({
             "id_usuario_origen": self.id_usuario,
             "id_usuario_destino": usuario_destino.id_usuario,
-            "monto_transferido": cantidad,
+            "monto_transferido": cantidad_dinero,
             "saldo_origen": self.saldo,
             "saldo_destino": usuario_destino.saldo
         }).obtener_diccionario()

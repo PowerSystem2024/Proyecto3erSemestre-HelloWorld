@@ -1,5 +1,5 @@
 from .BaseDeDatos import BaseDeDatos
-from .utilidades import *
+from .Utilidades import *
 from .Usuario import Usuario
 from .RespuestaSemantica import RespuestaSemantica
 
@@ -83,23 +83,14 @@ class Cajero:
         if self.db.verificar_usuarios_existentes() == 0:
             self.db.crear_usuario_inicial()
 
-    def autenticar_usuario(self, nombre_usuario: str, contraseña: str) -> dict:
-        respuesta = RespuestaSemantica(tipo_respuesta="autenticar_usuario")
-
+    def _autenticar_usuario(self, nombre_usuario: str, contraseña: str) -> Usuario | None:
         resultado = self.db.autenticar_usuario(nombre_usuario, contraseña)
-        if not resultado:
-            return respuesta.con_error("credenciales_invalidas").obtener_diccionario()
-        
-        id_usuario, saldo = resultado
-        self._usuario_actual = Usuario(id_usuario, nombre_usuario, saldo, self.db)
+        if resultado:
+            id_usuario, saldo = resultado
+            return Usuario(id_usuario, nombre_usuario, saldo, self.db)
+        return None
 
-        return respuesta.con_exito({
-            "id_usuario": id_usuario,
-            "nombre_usuario": nombre_usuario,
-            "saldo": saldo
-        }).obtener_diccionario()
 
-    
     def iniciar_sesion(self, nombre_usuario, contraseña) -> dict:
         respuesta = RespuestaSemantica(tipo_respuesta="iniciar_sesion")
         max_intentos = 3
@@ -108,19 +99,19 @@ class Cajero:
         if intentos >= max_intentos:
             return respuesta.con_error("demasiados_intentos").obtener_diccionario()
 
-        resultado = self.db.autenticar_usuario(nombre_usuario, contraseña)
-        if resultado:
-            id_usuario, saldo = resultado
-            self._usuario_actual = Usuario(id_usuario, nombre_usuario, saldo, self.db)
-            self._intentos_fallidos[nombre_usuario] = 0  # resetear contador
+        usuario = self._autenticar_usuario(nombre_usuario, contraseña)
+        if usuario:
+            self._usuario_actual = usuario
+            self._intentos_fallidos[nombre_usuario] = 0
             return respuesta.con_exito({
-                "id_usuario": id_usuario,
-                "nombre_usuario": nombre_usuario,
-                "saldo": saldo
+                "id_usuario": usuario.id_usuario,
+                "nombre_usuario": usuario.nombre,
+                "saldo": usuario.saldo
             }).obtener_diccionario()
         else:
             self._intentos_fallidos[nombre_usuario] = intentos + 1
             return respuesta.con_error("credenciales_invalidas").obtener_diccionario()
+
 
 
     def obtener_usuario_actual(self):
