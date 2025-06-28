@@ -21,7 +21,7 @@ class ControladorInterfazTerminal:
         self._estado_interfaz = {
             "grupo_acciones": self._interfaz.obtener_grupo_acciones_actual(),
             "respuesta": None,
-            "respuesta_peticion": None,
+            "error": None,
             "campo_actual": None,
             "mensaje_campo": None,
             "modo": "menu"  # o "accion"
@@ -29,94 +29,82 @@ class ControladorInterfazTerminal:
 
 
     def bucle_general(self):
-        # Mientras el sistema esté corriendo
         while self._corriendo:
-
-            # Limpiar pantalla
             self._renderizador.borrar_pantalla()
 
-            # Actualizar siempre el grupo de acciones por si cambia dinámicamente
+            # Actualiza siempre el grupo de acciones por si cambia dinámicamente
             self._estado_interfaz["grupo_acciones"] = self._interfaz.obtener_grupo_acciones_actual()
 
-            # Obtener siguiente campo a completar según el tipo de acción actual
             campo_info = self._interfaz.siguiente_campo_de_entrada(
                 self._definicion_campos_actual,
                 self._tipo_accion_actual,
                 self._iterador_campos_actual,
             )
 
-            # Si todos los campos ya fueron completados
             if campo_info["datos"]["completado"]:
-
-                # Copiar tipo de acción y parámetros recolectados
                 tipo_accion = self._tipo_accion_actual
                 parametros = self._parametros_recolectados.copy()
 
-                # Reiniciar estado de recolección de entradas
+                # Reset estado de entrada
                 self._reiniciar_estado_entrada()
 
-                # Si se está eligiendo una opción del menú
                 if tipo_accion == "elegir_opcion":
-                    # Procesar la selección de opción
                     seleccion = self._interfaz.elegir_opcion(
                         self._estado_interfaz["grupo_acciones"],
                         parametros.get("opcion_elegida")
                     )
-
-                    # Si hubo error en la selección, continuar
                     if not seleccion["exito"]:
-                        continue # Volver al inicio del bucle
+                        self._estado_interfaz["error"] = seleccion["error"]
+                        continue
 
-                    # Si fue válida, cargar el nuevo tipo de acción y definición de entrada
                     self._tipo_accion_actual = seleccion["datos"]["tipo_accion"]
                     self._definicion_campos_actual = ENTRADAS_INTERFAZ.get(self._tipo_accion_actual, [])
                     self._iterador_campos_actual = iter(self._definicion_campos_actual)
-                    continue # Volver al inicio del bucle
+                    continue
 
-                # Procesar la acción solicitada
-                respuesta_peticion = self.procesar_accion(tipo_accion, parametros)
+                respuesta = self.procesar_accion(tipo_accion, parametros)
 
-                # Actualizar el modo (accion/menu) según el tipo de acción
+                ##################################################################
+                # Testing
+                print(f"tipo_accion: {tipo_accion}, parametros: {parametros} ")
+                print(f"respuesta: {respuesta}")
+                stop = input("----------------------------------")
+                self._renderizador.borrar_pantalla()
+                ##################################################################
+                
                 if tipo_accion in ACCIONES_MENU_TERMINAL:
                     self._estado_interfaz["modo"] = "menu"
                 elif tipo_accion in ACCIONES:
                     self._estado_interfaz["modo"] = "accion"
                 
-                # Actualizar respuesta
-                self._estado_interfaz["respuesta_peticion"] = respuesta_peticion
+                self._estado_interfaz["respuesta"] = respuesta
 
                 ##################################################################
                 # Testing
-                print(self._estado_interfaz)
-                input("-------------if Statement--------------------")
+                coso = self._estado_interfaz
+                print(coso)
+                input("---------------------------------")
                 self._renderizador.borrar_pantalla()
                 ##################################################################
 
-                # Mostrar respuesta actualizada en pantalla
                 self._renderizador.renderizar_pantalla(self._estado_interfaz)
 
-                # Solicitar confirmación de información de la respuesta actualizada
+                # Solicitar confirmación
                 if tipo_accion in ACCIONES and self._estado_interfaz["modo"] == "accion":
                     self._renderizador.solicitar_confirmacion()
                 
-                # Resetear respuesta de llenado de campos y respuesta de la petición
+                # Resetear respuesta
                 self._estado_interfaz["respuesta"] = None
-                self._estado_interfaz["respuesta_peticion"] = None
                 
-                # Verificar si se solicitó terminar el programa
+
                 if tipo_accion == "terminar_programa":
                     self._corriendo = False
 
             else:
-                # Si todavía se está completando un campo
                 campo = campo_info["datos"]["campo_actual"]
-                mensaje = campo_info["datos"]["mensaje"]
-
-                # Guardar en el estado actual la información de entrada
                 self._estado_interfaz["campo_actual"] = campo
-                self._estado_interfaz["mensaje_campo"] = mensaje
+                self._estado_interfaz["mensaje_campo"] = campo_info["datos"]["mensaje"]
 
-                # Determinar el modo de la pantalla
                 if self._tipo_accion_actual == "elegir_opcion":
                     self._estado_interfaz["modo"] = "menu"
                 else:
@@ -131,19 +119,16 @@ class ControladorInterfazTerminal:
                 else:
                     self._estado_interfaz["respuesta"] = None
 
-                ##################################################################
-                # Testing
-                print(self._estado_interfaz)
-                input("------------Else Statement----------------")
-                self._renderizador.borrar_pantalla()
-                ##################################################################
-
-                # Renderizar pantalla completa con estado actualizado
                 self._renderizador.renderizar_pantalla(self._estado_interfaz)
                 
-                # Solicitar entrada del usuario
-                self._parametros_recolectados[campo] = self._renderizador.solicitar_entrada()
+                # Luego, pedir nueva entrada
+                entrada = self._renderizador.solicitar_entrada()
 
+                if not entrada:
+                    self._estado_interfaz["error"] = f"{campo}_vacio"
+                else:
+                    self._parametros_recolectados[campo] = entrada
+                    self._estado_interfaz["error"] = None
 
 
     def procesar_accion(self, tipo_accion: str, parametros: dict) -> dict:
@@ -189,9 +174,6 @@ class ControladorInterfazTerminal:
         self._tipo_accion_actual = "elegir_opcion"
         self._definicion_campos_actual = ENTRADAS_INTERFAZ["elegir_opcion"]
         self._iterador_campos_actual = iter(self._definicion_campos_actual)
-        self._estado_interfaz["campo_actual"] = None
-        self._estado_interfaz["mensaje_campo"] = None
-
 
     def generar_respuesta_parcial(self, tipo_accion: str, parametros: dict) -> dict:
         return {

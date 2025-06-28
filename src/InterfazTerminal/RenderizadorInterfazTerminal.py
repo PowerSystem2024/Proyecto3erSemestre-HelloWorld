@@ -158,7 +158,7 @@ class RenderizadorInterfazTerminal:
     def escribir_con_retraso(self, lineas: list[str], delay=0.05):
         for i, linea in enumerate(lineas):
             if i == len(lineas) - 1:
-                print(linea, end=" ")
+                print(linea, end="")
             else:
                 print(linea)
             time.sleep(delay)
@@ -260,7 +260,7 @@ class RenderizadorInterfazTerminal:
     
     
     def solicitar_confirmacion(self):
-        print("\nPresione cualquier tecla para continuar...")
+        print("\nPresionar tecla ENTER para continuar...")
         input()
 
 class DefaultDictConVacios(dict):

@@ -16,26 +16,31 @@ ACCION_GENERADOR_SUBMENU = {
 ENTRADAS_INTERFAZ = {
     "iniciar_sesion": {
         "nombre_usuario": {
-            "mensaje": "Ingresar nombre de usuario: "
+            "mensaje": "Ingresar nombre de usuario:"
         },
         "contraseña": {
-            "mensaje": "Ingresar contraseña: "
+            "mensaje": "Ingresar contraseña:"
+        }
+    },
+    "retirar_dinero": {
+        "cantidad_dinero": {
+            "mensaje": "Ingresar cantidad de dinero a retirar:"
         }
     },
     "generar_usuario": {
         "usuario": {
-            "mensaje": "Nombre de usuario nuevo: "
+            "mensaje": "Nombre de usuario nuevo:"
         },
         "contraseña": {
-            "mensaje": "Contraseña inicial: "
+            "mensaje": "Contraseña inicial:"
         },
         "saldo": {
-            "mensaje": "Saldo inicial: ",
+            "mensaje": "Saldo inicial:",
         }
     },
     "elegir_opcion": {
         "opcion_elegida": {
-            "mensaje" : "Elegir opción: "
+            "mensaje" : "Elegir opción:"
         }
     }
 }
