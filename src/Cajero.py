@@ -112,7 +112,26 @@ class Cajero:
             self._intentos_fallidos[nombre_usuario] = intentos + 1
             return respuesta.con_error("credenciales_invalidas").obtener_diccionario()
 
+    def cerrar_sesion(self) -> dict:
+        respuesta = RespuestaSemantica(tipo_respuesta="cerrar_sesion")
 
+        if self._usuario_actual is not None:
+            usuario = self._usuario_actual
+            self._usuario_actual = None
+            return respuesta.con_exito({
+                "id_usuario": usuario.id_usuario,
+                "nombre_usuario": usuario.nombre,
+            }).obtener_diccionario()
+        else:
+            return respuesta.con_error("sin_usuario_autenticado").obtener_diccionario()
+
+    
 
     def obtener_usuario_actual(self):
         return self._usuario_actual
+    
+    def establecer_usuario_actual(self, usuario):
+        self._usuario_actual = usuario
+
+    def obtener_base_de_datos(self):
+        return self.db

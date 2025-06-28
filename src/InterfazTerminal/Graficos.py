@@ -29,8 +29,8 @@ class Graficos:
             raise ValueError("El ancho de la celda debe ser al menos 3.")
         if alto_celda < 3:
             raise ValueError("El alto de la celda debe ser al menos 3.")
-        if alto_celda % 2 == 0:
-            raise ValueError("El alto de la celda debe ser un número impar.")
+#       if alto_celda % 2 == 0:
+#            raise ValueError("El alto de la celda debe ser un número impar.")
         self._ancho_celda = ancho_celda
         self._alto_celda = alto_celda
 
