@@ -90,23 +90,7 @@ class Cajero:
         # Si no hay usuarios en la base de datos, se crea un usuario por defecto
         if self.db.verificar_usuarios_existentes() == 0:
             self.db.crear_usuario_inicial()
-
-    def autenticar_usuario(self):
-        intentos = 3
-        while intentos > 0:
-            usuario = input('Ingrese su nombre de usuario: ')
-            contraseña = input('Ingrese su contraseña: ')
-            resultado = self.db.autenticar_usuario(usuario, contraseña)
-            if resultado:
-                id_usuario, saldo = resultado
-                imprimir_con_delay(f'Bienvenido {usuario}')
-                self._usuario_actual = Usuario(id_usuario, usuario, saldo, self.db)
-                return True
-            else:
-                intentos -= 1
-                imprimir_con_delay(f'Usuario o contraseña incorrectos. Intentos restantes: {intentos}')
-        imprimir_con_delay('Demasiados intentos. Reinicie el programa e intente de nuevo.')
-        return False
+    
     
     def iniciar_sesion(self):
 
