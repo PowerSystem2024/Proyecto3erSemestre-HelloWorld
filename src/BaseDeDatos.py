@@ -70,3 +70,7 @@ class BaseDeDatos:
         # Cierra la conexión con la base de datos si está abierta
         if self.conexion:
             self.conexion.close()
+
+    def obtener_id_saldo_por_nombre(self, nombre_usuario):
+        self.cursor.execute('SELECT id, saldo FROM usuarios WHERE nombre = ?', (nombre_usuario,))
+        return self.cursor.fetchone()  # Devuelve (id, saldo) o None

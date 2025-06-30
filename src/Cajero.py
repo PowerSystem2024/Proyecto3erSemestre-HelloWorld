@@ -47,7 +47,11 @@ class Cajero:
                 return  # Evita continuar si el usuario ya existe
 
             nueva_contraseña_usuario = input('Ingrese la contraseña del nuevo usuario: ')
-            nuevo_saldo_usuario = float(input('Ingrese el saldo inicial del nuevo usuario: '))
+            entrada = input('Ingrese el saldo inicial del nuevo usuario: ')
+            nuevo_saldo_usuario = float(entrada)
+            if nuevo_saldo_usuario < 0:
+                imprimir_con_delay("El saldo no puede ser negativo.")
+                return
 
             # Crear el usuario en la base de datos
             self.db.crear_nuevo_usuario(nuevo_nombre_usuario, nueva_contraseña_usuario, nuevo_saldo_usuario)
@@ -56,7 +60,7 @@ class Cajero:
             # El objeto Usuario se crea cuando alguien inicia sesión
             imprimir_con_delay(f'Usuario {nuevo_nombre_usuario} creado con éxito')
         except ValueError:
-            print('Ingrese valores válidos')
+            imprimir_con_delay('Ingrese valores válidos.')
    
     # Implementado en Accion Registrarse
     def registrar_usuario(self):
